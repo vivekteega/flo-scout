@@ -1,34 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FLO Scout</title>
     <link rel="stylesheet" href="css/main.css" />
-</head>
+  </head>
 
-<body data-theme="dark">
+  <body data-theme="dark">
     <div id="loader_page" class="hide-completely">
-        <svg id="loader" class="icon" viewBox="0 0 64 64">
-            <title>Loading</title>
-            <circle cx="32" cy="32" r="32" />
-        </svg>
-        <h4>Loading</h4>
-        `
+      <svg id="loader" class="icon" viewBox="0 0 64 64">
+        <title>Loading</title>
+        <circle cx="32" cy="32" r="32" />
+      </svg>
+      <h4>Loading</h4>
+      `
     </div>
     <header id="page_header" class="flex margin">
-        <h3 id="page_title">Block</h3>
-        <svg id="secondary_search_btn" class="icon margin-left-auto hover" viewBox="0 0 64 64">
-            <title>
-                search for block, transactions, address, token or contract
-            </title>
-            <circle cx="25.34" cy="25.34" r="24.84" />
-            <line x1="63.65" y1="63.65" x2="42.91" y2="42.91" />
-        </svg>
+      <h3 id="page_title">Block</h3>
+      <svg
+        id="secondary_search_btn"
+        class="icon margin-left-auto hover"
+        viewBox="0 0 64 64"
+      >
+        <title>
+          search for block, transactions, address, token or contract
+        </title>
+        <circle cx="25.34" cy="25.34" r="24.84" />
+        <line x1="63.65" y1="63.65" x2="42.91" y2="42.91" />
+      </svg>
     </header>
     <main id="page_container">
-        <!--<div id="search_page" class="page hide-completely">
+      <!--<div id="search_page" class="page hide-completely">
             <label id="secondary_search" class="input">
                 <svg class="icon" viewBox="0 0 64 64">
                     <title>search icon</title>
@@ -256,7 +259,12 @@
               `;
                 return page;
             },
-            tokenPage: function (token, supply, incAddress) {
+            tokenPage: function (obj) {
+                let {
+                    token,
+                    supply,
+                    incAddress
+                } = obj
                 let page = document.createElement("div");
                 page.classList.add("page");
                 page.id = "token_page";
@@ -573,12 +581,9 @@
             }
 
             if (pageId === "token_page") {
+                let tokenInfo = await getTokenInfo(field);
                 pageContainer.append(
-                    create.tokenPage(
-                        "rmt",
-                        "21,000,000",
-                        "F6EMAHjivqrcrdAHNABq2R1FLNkx8xfEaT"
-                    )
+                    create.tokenPage(tokenInfo)
                 );
                 pageTitle.textContent = "Token";
             }
@@ -1046,7 +1051,24 @@
                 }, 2000);
             });
         }
-    </script>
-</body>
 
+        function getTokenInfo(thisToken) {
+            return fetch(
+                `https://ranchimallflo.duckdns.org/api/v1.0/getTokenInfo?token=${thisToken.toLowerCase()}`
+            )
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (tokenInfo) {
+
+                    let obj = {  
+                        token:tokenInfo['token'],
+                        supply:tokenInfo['tokenSupply'],
+                        incAddress:tokenInfo['incorporationAddress']};
+                    return obj;
+                });
+            }
+
+    </script>
+  </body>
 </html>
