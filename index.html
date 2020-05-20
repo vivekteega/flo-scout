@@ -576,6 +576,8 @@
                         "1ab70a9de6a8deeb0ba8f6c4ca015d60659c90953a7c8a1f3215276fe57b1fb2",
                     confirmations: "22458",
                 };
+
+                let txInfo = await getTransactionInfo(field);
                 pageContainer.append(create.transactionPage(obj));
                 pageTitle.textContent = "Transaction";
             }
@@ -603,18 +605,8 @@
             }
 
             if (pageId === "block_page") {
-                let obj = {
-                    blockHeight: "4530254",
-                    size: "5161351651 bytes",
-                    transactions: "2",
-                    reward: "1FLO",
-                    amount: "0.1FLO",
-                    nonce: "5161",
-                    difficulty: "654564",
-                    hash:
-                        "1ab70a9de6a8deeb0ba8f6c4ca015d60659c90953a7c8a1f3215276fe57b1fb2",
-                };
-                pageContainer.append(create.blockPage(obj));
+                let blockInfo = await getBlockInfo(field);
+                pageContainer.append(create.blockPage(blockInfo));
                 pageTitle.textContent = "block";
             }
 
@@ -636,12 +628,8 @@
                 }
                 document.getElementById("top_transaction_container").append(frag);
 
-                /*
-                    frag.append(create.contractTransferCard(obj));
-                    frag.append(create.tokenTransferCard(obj));
-                    frag.append(create.tokenCreationCard(obj));
-                    document.getElementById("top_transaction_container").append(frag);
-                    */
+                // todo - add latest blocks 
+                let latestBlocks = await getLatestBlocks();
 
                 let themeToggler = document.getElementById("theme_toggle"),
                     body = document.querySelector("body");
@@ -668,6 +656,7 @@
                     }
                 });
             } else pageHeader.classList.remove("hide-completely");
+            
             currentPage = pageId;
             prevField = field;
             loading();
@@ -1043,6 +1032,20 @@
                 });
         }
 
+        function getLatestBlocks() {
+            return fetch(
+                `https://ranchimallflo.duckdns.org/api/v1.0/getLatestBlockDetails?numberOfLatestBlocks=4`
+            )
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (tokenInfo) {
+
+                    let obj = {};
+                    return obj;
+                });
+            }
+
         function getAddressInfo(thisAddress) {
             return new Promise((resolve) => {
                 let obj = { balance: "0.0001", address: thisAddress };
@@ -1065,6 +1068,27 @@
                         token:tokenInfo['token'],
                         supply:tokenInfo['tokenSupply'],
                         incAddress:tokenInfo['incorporationAddress']};
+                    return obj;
+                });
+            }
+
+        function getBlockInfo(thisBlock) {
+            return fetch(
+                `https://ranchimallflo.duckdns.org/api/v1.0/getBlockDetails/${thisBlock}`
+            )
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (blockInfo) {
+
+                    let obj = {  
+                        blockHeight:blockInfo['height'], 
+                        size:blockInfo['size'], 
+                        transactions:'', 
+                        reward:blockInfo['reward'], 
+                        hash:blockInfo['hash'], 
+                        difficulty:blockInfo['difficulty'], 
+                        nonce:blockInfo['nonce']};
                     return obj;
                 });
             }
