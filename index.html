@@ -1001,7 +1001,7 @@
         });
     }
 
-    function getTokenBalances() {
+    function getTokenBalances(tokenName) {
       fetch(`${tokenapiUrl}/api/v1.0/getTokenBalances?token=` + tokenName)
         .then(function (response) {
           return response.json();
@@ -1012,7 +1012,7 @@
 
     }
 
-    function getTokenTransactions() {
+    function getTokenTransactions(tokenName) {
       fetch(`${tokenapiUrl}/api/v1.0/getTokenTransactions?token=` + tokenName)
         .then(function (response) {
           return response.json();
