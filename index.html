@@ -709,7 +709,7 @@
     }
 
     function getBannerData() {
-      return fetch("https://ranchimallflo.duckdns.org/api/v1.0/getSystemData")
+      return fetch(`${tokenapiUrl}/api/v1.0/getSystemData`)
         .then(function (response) {
           return response.json();
         })
@@ -729,7 +729,7 @@
 
     function getLatestTxs() {
       return fetch(
-        "https://ranchimallflo.duckdns.org/api/v1.0/getLatestTransactionDetails?numberOfLatestBlocks=4"
+        `${tokenapiUrl}/api/v1.0/getLatestTransactionDetails?numberOfLatestBlocks=4`
       )
         .then(function (response) {
           return response.json();
@@ -961,7 +961,7 @@
 
     function getLatestBlocks() {
       return fetch(
-        `https://ranchimallflo.duckdns.org/api/v1.0/getLatestBlockDetails?numberOfLatestBlocks=4`
+        `${tokenapiUrl}/api/v1.0/getLatestBlockDetails?numberOfLatestBlocks=4`
       )
         .then(function (response) {
           return response.json();
@@ -974,7 +974,7 @@
 
     function getTokenInfo(thisToken) {
       return fetch(
-        `https://ranchimallflo.duckdns.org/api/v1.0/getTokenInfo?token=${thisToken.toLowerCase()}`
+        `${tokenapiUrl}/api/v1.0/getTokenInfo?token=${thisToken.toLowerCase()}`
       )
         .then(function (response) {
           return response.json();
@@ -1019,7 +1019,7 @@
 
     function getBlockInfo(thisBlock) {
       return fetch(
-        `https://ranchimallflo.duckdns.org/api/v1.0/getBlockDetails/${thisBlock}`
+        `${tokenapiUrl}/api/v1.0/getBlockDetails/${thisBlock}`
       )
         .then(function (response) {
           return response.json();
@@ -1038,11 +1038,11 @@
         });
     }
 
-    
+
 
     function getContractInfo(contract) {
       return fetch(
-        `https://ranchimallflo.duckdns.org/api/v1.0/getSmartContractInfo?contractName=${contract.name}&contractAddress=${contract.address}`
+        `${tokenapiUrl}/api/v1.0/getSmartContractInfo?contractName=${contract.name}&contractAddress=${contract.address}`
       )
         .then(function (response) {
           return response.json();
@@ -1072,7 +1072,7 @@
 
     function getContractParticipants(contract) {
       return fetch(
-        `https://ranchimallflo.duckdns.org/api/v1.0/getSmartContractParticipants?contractName=${contract.name}&contractAddress=${contract.address}`
+        `${tokenapiUrl}/api/v1.0/getSmartContractParticipants?contractName=${contract.name}&contractAddress=${contract.address}`
       )
         .then(function (response) {
           return response.json();
@@ -1093,7 +1093,7 @@
 
     function getContractTransactions(contract) {
       return fetch(
-        `https://ranchimallflo.duckdns.org/api/v1.0/getSmartContractTransactions?contractName=${contract.name}&contractAddress=${contract.address}`
+        `${tokenapiUrl}/api/v1.0/getSmartContractTransactions?contractName=${contract.name}&contractAddress=${contract.address}`
       )
         .then(function (response) {
           return response.json();
@@ -1114,7 +1114,7 @@
 
     function getViewallBlocks() {
       return fetch(
-        `https://ranchimallflo.duckdns.org/api/v1.0/getLatestBlockDetails?limit=100`
+        `${tokenapiUrl}/api/v1.0/getLatestBlockDetails?limit=100`
       )
         .then(function (response) {
           return response.json();
@@ -1136,7 +1136,7 @@
 
     function getViewallTxs() {
       return fetch(
-        `https://ranchimallflo.duckdns.org/api/v1.0/getLatestTransactionDetails?limit=200`
+        `${tokenapiUrl}/api/v1.0/getLatestTransactionDetails?limit=200`
       )
         .then(function (response) {
           return response.json();
@@ -1157,7 +1157,7 @@
 
     function getAddressInfo(floAddress) {
       return fetch(
-        `https://ranchimallflo.duckdns.org/api/v1.0/getFloAddressInfo?floAddress=${floAddress}`
+        `${tokenapiUrl}/api/v1.0/getFloAddressInfo?floAddress=${floAddress}`
       )
         .then(function (response) {
           return response.json();
@@ -1211,7 +1211,7 @@
 
     function getAddressTxs(floAddress) {
       return fetch(
-        `https://ranchimallflo.duckdns.org/api/v1.0/getFloAddressTransactions?floAddress=${floAddress}`
+        `${tokenapiUrl}/api/v1.0/getFloAddressTransactions?floAddress=${floAddress}`
       )
         .then(function (response) {
           return response.json();
@@ -1234,7 +1234,7 @@
 
     function getTxInfo(thisTx) {
       return fetch(
-        `https://ranchimallflo.duckdns.org/api/v1.0/getTransactionDetails/${thisTx}`
+        `${tokenapiUrl}/api/v1.0/getTransactionDetails/${thisTx}`
       )
         .then(function (response) {
           return response.json();
