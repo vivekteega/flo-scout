@@ -8,6 +8,12 @@
   <link rel="stylesheet" href="css/main.css" />
 </head>
 
+<!-- Set urls for token and flo Apis -->
+<script>
+  window.tokenapiUrl = 'https://ranchimallflo.duckdns.org'
+  window.floapiUrl = 'https://flosight.duckdns.org'
+</script>
+
 <body data-theme="dark">
   <div id="loader_page" class="hide-completely">
     <svg id="loader" class="icon" viewBox="0 0 64 64">
@@ -1199,7 +1205,7 @@
 
     function getAddressBalance(floAddress) {
       return fetch(
-        `https://flosight.duckdns.org/api/addr/${floAddress}/balance`
+        `${floapiUrl}/api/addr/${floAddress}/balance`
       )
         .then(function (response) {
           return response.json();
