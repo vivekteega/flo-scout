@@ -48,6 +48,7 @@
 
             </div>  -->
     </main>
+
     <script>
       let frag = document.createDocumentFragment();
       const create = {
@@ -552,48 +553,6 @@
 
         removePage(currentPage);
 
-        if (pageId === "address_page") {
-          let addressInfo = await getAddressInfo(field);
-          let addressBalance = await getAddressBalance(field);
-          let addressTxs = await getAddressTxs(field);
-        }
-
-        if (pageId === "token_page") {
-          let tokenInfo = await getTokenInfo(field);
-          pageContainer.append(create.tokenPage(tokenInfo));
-          pageTitle.textContent = "Token";
-        }
-
-        if (pageId === "contract_page") {
-          // todo: load contract variable dynamically
-          let contract = {
-            name: "india-elections-2019",
-            address: "F7osBpjDDV1mSSnMNrLudEQQ3cwDJ2dPR1",
-          };
-
-          let contractInfo = await getContractInfo(contract);
-          // todo : check the type of contract & then further checks like fetching details of contractParticipant 
-          let contractTransactions = await getContractTransactions(contract);
-          let contractParticipants = await getContractParticipants(contract);
-          let obj = {
-            status: "closed",
-            contract: "india-elections-2019",
-            contractType: "one-time-event",
-            incAddress: "F7osBpjDDV1mSSnMNrLudEQQ3cwDJ2dPR1",
-            expiration: "wed may 22 2019 21:00:00 gmt+0530",
-            token: "rmt",
-            participationFees: "0.001 RMT",
-          };
-          pageContainer.append(create.contractPage(obj));
-          pageTitle.textContent = "Contract";
-        }
-
-        if (pageId === "block_page") {
-          let blockInfo = await getBlockInfo(field);
-          pageContainer.append(create.blockPage(blockInfo));
-          pageTitle.textContent = "block";
-        }
-
         if (pageId === "homepage") {
           // banner
           pageHeader.classList.add("hide-completely");
@@ -641,18 +600,70 @@
           });
         } else pageHeader.classList.remove("hide-completely");
 
-        if (pageId === "viewallblocks") {
-            let latest100blocks = await getLatestBlocks();
+        if (pageId === "block_page") {
+          let blockInfo = await getBlockInfo(field);
+          pageContainer.append(create.blockPage(blockInfo));
+          pageTitle.textContent = "block";
+
+          // todo: add ui components for transactions
         }
 
-        if (pageId === "viewalltxs") {
-            let latest100txs = await getViewallTxs();
+        if (pageId === "address_page") {
+          let addressInfo = await getAddressInfo(field);
+          let addressBalance = await getAddressBalance(field);
+          let addressTxs = await getAddressTxs(field);
 
+          let addressBal = {
+            balance: `${addressBalance} FLO`,
+            address: `${field}`,
+          };
+
+          pageContainer.append(create.blockPage(addressBal));
+          pageTitle.textContent = "address";
+
+          debugger;
         }
 
         if (pageId === "transaction_page") {
-            let latest100txs = await getTxDetafils();
+          let latest100txs = await getTxDetafils();
+        }
 
+        if (pageId === "token_page") {
+          let tokenInfo = await getTokenInfo(field);
+          pageContainer.append(create.tokenPage(tokenInfo));
+          pageTitle.textContent = "Token";
+        }
+
+        if (pageId === "contract_page") {
+          // todo: load contract variable dynamically
+          let contract = {
+            name: "india-elections-2019",
+            address: "F7osBpjDDV1mSSnMNrLudEQQ3cwDJ2dPR1",
+          };
+
+          let contractInfo = await getContractInfo(contract);
+          // todo : check the type of contract & then further checks like fetching details of contractParticipant
+          let contractTransactions = await getContractTransactions(contract);
+          let contractParticipants = await getContractParticipants(contract);
+          let obj = {
+            status: "closed",
+            contract: "india-elections-2019",
+            contractType: "one-time-event",
+            incAddress: "F7osBpjDDV1mSSnMNrLudEQQ3cwDJ2dPR1",
+            expiration: "wed may 22 2019 21:00:00 gmt+0530",
+            token: "rmt",
+            participationFees: "0.001 RMT",
+          };
+          pageContainer.append(create.contractPage(obj));
+          pageTitle.textContent = "Contract";
+        }
+
+        if (pageId === "viewallblocks") {
+          let latest100blocks = await getLatestBlocks();
+        }
+
+        if (pageId === "viewalltxs") {
+          let latest100txs = await getViewallTxs();
         }
 
         currentPage = pageId;
@@ -1046,19 +1057,6 @@
           });
       }
 
-      function getAddressBalanceInfo(thisAddress) {
-        return fetch(
-          `https://ranchimallflo.duckdns.org/api/v1.0/getFloAddressInfo?floAddress=${thisAddress}`
-        )
-          .then(function (response) {
-            return response.json();
-          })
-          .then(function (tokenInfo) {
-            let obj = { balance: "0.0001", address: thisAddress };
-            return obj;
-          });
-      }
-
       function getTokenInfo(thisToken) {
         return fetch(
           `https://ranchimallflo.duckdns.org/api/v1.0/getTokenInfo?token=${thisToken.toLowerCase()}`
@@ -1067,10 +1065,23 @@
             return response.json();
           })
           .then(function (tokenInfo) {
+            let associatedSC = {};
+            for (
+              let i = 0,
+                associatedScList = tokenInfo["associatedSmartContracts"];
+              i < associatedScList.length;
+              i++
+            ) {
+              associatedSC[
+                `${associatedScList[i]["contractName"]}-${associatedScList[i]["contractAddress"]}`
+              ] = associatedScList[i];
+            }
             let obj = {
               token: tokenInfo["token"],
               supply: tokenInfo["tokenSupply"],
               incAddress: tokenInfo["incorporationAddress"],
+              associatedContracts: associatedSC,
+              blockchainReference: tokenInfo["blockchainReference"],
             };
             return obj;
           });
@@ -1085,13 +1096,13 @@
           })
           .then(function (blockInfo) {
             let obj = {
-              blockHeight: blockInfo["height"],
-              size: blockInfo["size"],
+              blockHeight: blockInfo["blockDetails"]["height"],
+              size: blockInfo["blockDetails"]["size"],
               transactions: "",
-              reward: blockInfo["reward"],
-              hash: blockInfo["hash"],
-              difficulty: blockInfo["difficulty"],
-              nonce: blockInfo["nonce"],
+              reward: blockInfo["blockDetails"]["reward"],
+              hash: blockInfo["blockDetails"]["hash"],
+              difficulty: blockInfo["blockDetails"]["difficulty"],
+              nonce: blockInfo["blockDetails"]["nonce"],
             };
             return obj;
           });
@@ -1200,10 +1211,9 @@
             };
             return obj;
           });
-      
-        }
+      }
 
-      function getAddressInfo(address){
+      function getAddressInfo(floAddress) {
         return fetch(
           `https://ranchimallflo.duckdns.org/api/v1.0/getFloAddressInfo?floAddress=${floAddress}`
         )
@@ -1211,7 +1221,28 @@
             return response.json();
           })
           .then(function (addressInfo) {
-            let obj = {
+            // tokens
+            if (typeof addressInfo["floAddressBalances"] === "undefined") {
+              for (
+                let i = 0,
+                  tokenkeys = Object.keys(addressInfo["floAddressBalances"]);
+                i < tokenkeys.length;
+                i++
+              ) {}
+            }
+
+            // contracts
+            if (typeof addressInfo["incorporatedSmartContracts"] === "undefined") {
+              for ( let i = 0,
+                  contractkeys = Object.keys(
+                    addressInfo["incorporatedSmartContracts"]
+                  );
+                i < contractkeys.length;
+                i++
+              ) {}
+            }
+
+            /*let obj = {
               blockHeight: blockInfo["height"],
               size: blockInfo["size"],
               transactions: "",
@@ -1219,12 +1250,12 @@
               hash: blockInfo["hash"],
               difficulty: blockInfo["difficulty"],
               nonce: blockInfo["nonce"],
-            };
-            return obj;
+            };*/
+            return (obj = {});
           });
       }
 
-      function getAddressBalance(address){
+      function getAddressBalance(floAddress) {
         return fetch(
           `https://flosight.duckdns.org/api/addr/${floAddress}/balance`
         )
@@ -1232,6 +1263,19 @@
             return response.json();
           })
           .then(function (addressBalance) {
+            return addressBalance;
+          });
+      }
+
+      function getAddressTxs(floAddress) {
+        return fetch(
+          `https://ranchimallflo.duckdns.org/api/v1.0/getFloAddressTransactions?floAddress=${floAddress}`
+        )
+          .then(function (response) {
+            return response.json();
+          })
+          .then(function (addressTxs) {
+            /*
             let obj = {
               blockHeight: blockInfo["height"],
               size: blockInfo["size"],
@@ -1241,26 +1285,28 @@
               difficulty: blockInfo["difficulty"],
               nonce: blockInfo["nonce"],
             };
-            return obj;
+            */
+            return (obj = {});
           });
       }
 
-      function getAddressTxs(address){
+      function getTxInfo(thisTx) {
         return fetch(
-          `https://ranchimallflo.duckdns.org/api/v1.0/getFloAddressTransactions?floAddress=${floAddress}`
+          `https://ranchimallflo.duckdns.org/api/v1.0/getTransactionDetails/${thisTx}`
         )
           .then(function (response) {
             return response.json();
           })
-          .then(function (addressBalance) {
+          .then(function (txDetails) {
+            debugger;
             let obj = {
-              blockHeight: blockInfo["height"],
-              size: blockInfo["size"],
+              blockHeight: blockInfo["blockDetails"]["height"],
+              size: blockInfo["blockDetails"]["size"],
               transactions: "",
-              reward: blockInfo["reward"],
-              hash: blockInfo["hash"],
-              difficulty: blockInfo["difficulty"],
-              nonce: blockInfo["nonce"],
+              reward: blockInfo["blockDetails"]["reward"],
+              hash: blockInfo["blockDetails"]["hash"],
+              difficulty: blockInfo["blockDetails"]["difficulty"],
+              nonce: blockInfo["blockDetails"]["nonce"],
             };
             return obj;
           });
