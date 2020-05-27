@@ -648,7 +648,6 @@
 
                 // append latest transactions
                 let txFrag = await getTxFrag(contractTransactions);
-                debugger;
                 txFrag.forEach(tx => {
                     switch(tx["type"]){
                         case 'tokentransfer':
@@ -662,11 +661,10 @@
                             break;
 
                         case 'contractincorp':
-                            debugger;
                             frag.append(create.contractCreationCard(tx));
                             break;
 
-                        case 'tokentrigger':
+                        case 'contracttrigger':
                             frag.append(create.contractTriggerCard(tx));
                             break;
                     } 
@@ -1401,6 +1399,26 @@
 
                     } else {
                         // transaction is a FLO Smart Contract Committe trigger
+
+                        let receiver = "", sender = txList[txids[i]]['transactionDetails']['vin'][0]['addr'], vout=txList[txids[i]]['transactionDetails']['vout'], vin=txList[txids[i]]['transactionDetails']['vin'];
+                        for (let i = 0; i < vout.length; i++) {
+                            if (vout[i]["scriptPubKey"]["addresses"][0] !== vin[0]["addr"]) {
+                                receiver = vout[i]["scriptPubKey"]["addresses"][0];
+                            }
+                        }
+
+                        obj = Object.assign({}, obj, {
+                            hash: txList[txids[i]]['txid'],
+                            blockHeight: txList[txids[i]]['transactionDetails']['blockheight'],
+                            contractName: txList[txids[i]]['parsedFloData']['contractName'],
+                            contractAddress: receiver,
+                            winningChoice: txList[txids[i]]['parsedFloData']['triggerCondition'],
+                            committeeAddress: sender,
+                            type: 'contracttrigger'
+                        });
+
+                        latestTxArray.push(obj);
+                        
                     }
                 }
 
