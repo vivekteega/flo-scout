@@ -662,6 +662,7 @@
                             break;
 
                         case 'contractincorp':
+                            debugger;
                             frag.append(create.contractCreationCard(tx));
                             break;
 
@@ -1367,7 +1368,7 @@
                                 latestTxArray.push(obj);
                                 break;
 
-                            case 'contractIncorporation':
+                            case 'smartContractIncorporation':
                                 // smart contract incorporation
                                 // todo : add checks to determine obj for different types of smart contract incorporation
                                 obj = Object.assign({}, obj, {
