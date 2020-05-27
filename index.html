@@ -650,10 +650,25 @@
                 let txFrag = await getTxFrag(contractTransactions);
                 debugger;
                 txFrag.forEach(tx => {
-                    if (tx["type"] == "tokentransfer")
-                        frag.append(create.tokenTransferCard(tx))
-                    else if (tx["type"] == "contracttransfer")
-                        frag.append(create.contractTransferCard(tx));
+                    switch(tx["type"]){
+                        case 'tokentransfer':
+                            frag.append(create.tokenTransferCard(tx))
+                            break;
+                        case 'contracttransfer':
+                            frag.append(create.contractTransferCard(tx));
+                            break;
+                        case 'tokenincorp':
+                            frag.append(create.tokenCreationCard(tx));
+                            break;
+
+                        case 'contractincorp':
+                            frag.append(create.contractCreationCard(tx));
+                            break;
+
+                        case 'tokentrigger':
+                            frag.append(create.contractTriggerCard(tx));
+                            break;
+                    } 
                 })
                 document.getElementById("participant_container").append(frag);
             }
